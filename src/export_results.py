@@ -130,12 +130,12 @@ def process_directory(base_dir, max_total_samples=30, reset=False):
             processed_in_this_run += 1
             total_completed = len(results)
             
-            # Salvar estado atual no disco (salva após cada arquivo para não perder se fechar o terminal)
-            save_state(results, pending_files, max_total_samples)
-            
-            # Exportar CSV incremental
-            df_temp = pd.DataFrame(results)
-            df_temp.to_csv(OUTPUT_CSV, index=False, encoding='utf-8-sig')
+            # Salvar estado e CSV apenas a cada 1/20 do total de imagens (5% intervals) ou no final
+            save_interval = max(1, total_to_process // 20)
+            if (processed_in_this_run % save_interval == 0) or (not pending_files):
+                save_state(results, pending_files, max_total_samples)
+                df_temp = pd.DataFrame(results)
+                df_temp.to_csv(OUTPUT_CSV, index=False, encoding='utf-8-sig')
             
             # --- CÁLCULO DE PROTÓTIPO DE PROGRESSO, ETA E ETC ---
             elapsed = time.time() - start_time
@@ -168,6 +168,9 @@ def process_directory(base_dir, max_total_samples=30, reset=False):
             sys.stdout.flush()
             
     except KeyboardInterrupt:
+        save_state(results, pending_files, max_total_samples)
+        df_temp = pd.DataFrame(results)
+        df_temp.to_csv(OUTPUT_CSV, index=False, encoding='utf-8-sig')
         sys.stdout.write("\n\n\033[KProcessamento pausado pelo usuário (Ctrl+C).\n")
         sys.stdout.write("O progresso foi salvo. Execute novamente para continuar de onde parou.\n")
         sys.exit(0)
