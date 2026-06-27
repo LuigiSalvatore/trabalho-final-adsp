@@ -12,11 +12,16 @@ class SpeedExtractor:
         if use_easyocr:
             try:
                 import easyocr
-                # Inicializa EasyOCR para Português e Inglês sem output no console
-                self.reader = easyocr.Reader(['pt', 'en'], gpu=False, verbose=False)
+                import torch
+                has_gpu = torch.cuda.is_available()
+                device_str = "GPU (CUDA)" if has_gpu else "CPU"
+                # Inicializa EasyOCR para Português e Inglês com detecção dinâmica de hardware
+                self.reader = easyocr.Reader(['pt', 'en'], gpu=has_gpu, verbose=False)
+                self.hardware_device = device_str
             except Exception as e:
                 print(f"Aviso: EasyOCR nao pode ser carregado: {e}")
                 self.use_easyocr = False
+                self.hardware_device = "Nenhum"
 
         # Padrões Regex para capturar velocidade medida
         self.patterns = [

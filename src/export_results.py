@@ -12,6 +12,7 @@ def process_directory(base_dir, max_total_samples=30):
     max_total_samples: limite total de imagens para demonstração rápida.
     """
     extractor = SpeedExtractor(use_easyocr=True)
+    print(f"Dispositivo de processamento OCR detectado: {extractor.hardware_device}")
     results = []
     
     extensions = ['*.jpg', '*.png', '*.jpeg', '*.JPG', '*.PNG', '*.JPEG']
