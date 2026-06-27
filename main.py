@@ -4,6 +4,12 @@ Extração automática de velocidade em fotos de medidores/radares (LABELO PUCRS
 """
 import os
 import sys
+import warnings
+
+# Suppress PyTorch and other UserWarnings to keep stdout/stderr clean
+warnings.filterwarnings("ignore")
+os.environ["PYTHONWARNINGS"] = "ignore"
+
 from src.export_results import process_directory, save_results
 
 def main():
