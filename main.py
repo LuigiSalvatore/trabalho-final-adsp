@@ -19,26 +19,29 @@ def main():
         
     print(f"Iniciando processamento de amostras em: {dataset_dir}")
     
-    # Verificar se o usuário solicitou processar TODAS as imagens via argumento '--all'
-    if "--all" in sys.argv:
+    # Flags de controle do terminal
+    reset = "--reset" in sys.argv
+    process_all = "--all" in sys.argv
+    
+    if process_all:
         print("Modo COMPLETO ativado: Processando TODAS as imagens do repositório...")
         max_samples = None
     else:
         print("Modo DEMONSTRAÇÃO ativado: Processando amostra de 20 imagens espalhadas pelas pastas...")
-        print("(Para processar todas as 2.338 imagens, execute: python main.py --all)\n")
+        print("(Para processar todas as 2.338 imagens, execute: python main.py --all)")
+        print("(Para reiniciar o progresso e ignorar pausados, adicione: --reset)\n")
         max_samples = 20
         
-    df_results = process_directory(dataset_dir, max_total_samples=max_samples)
+    df_results = process_directory(dataset_dir, max_total_samples=max_samples, reset=reset)
     
-    print("\n--- RESUMO DA EXTRAÇÃO ---")
+    print("--- RESUMO DA EXTRAÇÃO ---")
     total = len(df_results)
     if total > 0:
         sucessos = df_results['Velocidade_Extraida_kmh'].notnull().sum()
         print(f"Total de imagens processadas nesta rodada: {total}")
         print(f"Leituras de velocidade extraídas com sucesso: {sucessos} / {total} ({sucessos/total*100:.1f}%)")
     
-    output_path = "resultados_extracao_velocidade.csv"
-    save_results(df_results, output_path)
+    save_results(df_results)
     
     print("\nAmostra dos resultados obtidos:")
     print(df_results[['Arquivo', 'Velocidade_Extraida_kmh', 'Metodo_OCR']].head(10).to_string())
