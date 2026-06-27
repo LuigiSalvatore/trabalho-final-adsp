@@ -12,10 +12,10 @@ class SpeedExtractor:
         if use_easyocr:
             try:
                 import easyocr
-                # Inicializa EasyOCR para Português e Inglês
-                self.reader = easyocr.Reader(['pt', 'en'], gpu=False)
+                # Inicializa EasyOCR para Português e Inglês sem output no console
+                self.reader = easyocr.Reader(['pt', 'en'], gpu=False, verbose=False)
             except Exception as e:
-                print(f"Aviso: EasyOCR não půde ser carregado: {e}")
+                print(f"Aviso: EasyOCR nao pode ser carregado: {e}")
                 self.use_easyocr = False
 
         # Padrões Regex para capturar velocidade medida

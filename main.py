@@ -18,15 +18,16 @@ def main():
         sys.exit(1)
         
     print(f"Iniciando processamento de amostras em: {dataset_dir}")
-    print("Executando extração em lote (processando amostras de teste)...")
     
-    # Processa até 5 amostras por pasta para rápida demonstração e geração de estatísticas
-    df_results = process_directory(dataset_dir, max_samples_per_folder=5)
+    # Processa amostras representativas para demonstração e geração de estatísticas
+    df_results = process_directory(dataset_dir, max_total_samples=20)
     
     print("\n--- RESUMO DA EXTRAÇÃO ---")
-    print(f"Total de imagens processadas: {len(df_results)}")
-    sucessos = df_results['Velocidade_Extraida_kmh'].notnull().sum()
-    print(f"Leituras de velocidade extraídas com sucesso: {sucessos} / {len(df_results)} ({sucessos/len(df_results)*100:.1f}%)")
+    total = len(df_results)
+    if total > 0:
+        sucessos = df_results['Velocidade_Extraida_kmh'].notnull().sum()
+        print(f"Total de imagens processadas nesta rodada: {total}")
+        print(f"Leituras de velocidade extraídas com sucesso: {sucessos} / {total} ({sucessos/total*100:.1f}%)")
     
     output_path = "resultados_extracao_velocidade.csv"
     save_results(df_results, output_path)

@@ -5,11 +5,17 @@ import cv2
 import numpy as np
 
 def load_image(image_path):
-    """Carrega uma imagem a partir do caminho especificado."""
-    img = cv2.imread(image_path)
-    if img is None:
-        raise FileNotFoundError(f"Não foi possível carregar a imagem: {image_path}")
-    return img
+    """Carrega uma imagem a partir do caminho especificado suportando caracteres unicode no Windows."""
+    try:
+        with open(image_path, 'rb') as f:
+            chunk = f.read()
+        chunk_arr = np.frombuffer(chunk, dtype=np.uint8)
+        img = cv2.imdecode(chunk_arr, cv2.IMREAD_COLOR)
+        if img is None:
+            raise FileNotFoundError(f"Nao foi possivel decodificar a imagem: {image_path}")
+        return img
+    except Exception as e:
+        raise FileNotFoundError(f"Erro ao carregar a imagem: {image_path} - {e}")
 
 def crop_metadata_region(img, region='bottom', ratio=0.25):
     """
