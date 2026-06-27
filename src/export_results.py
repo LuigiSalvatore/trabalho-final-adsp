@@ -24,10 +24,13 @@ def process_directory(base_dir, max_total_samples=30):
                 
     # Ordenar e selecionar amostras representativas espalhadas pelas pastas
     all_image_files = sorted(all_image_files)
-    step = max(1, len(all_image_files) // max_total_samples) if all_image_files else 1
-    selected_files = all_image_files[::step][:max_total_samples]
+    if max_total_samples is not None:
+        step = max(1, len(all_image_files) // max_total_samples) if all_image_files else 1
+        selected_files = all_image_files[::step][:max_total_samples]
+    else:
+        selected_files = all_image_files
     
-    print(f"Total de {len(all_image_files)} imagens encontradas. Processando {len(selected_files)} amostras de teste...")
+    print(f"Total de {len(all_image_files)} imagens encontradas. Processando {len(selected_files)} imagens...")
     
     for idx, img_path in enumerate(selected_files, 1):
         rel_path = os.path.relpath(img_path, base_dir)

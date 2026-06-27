@@ -19,8 +19,16 @@ def main():
         
     print(f"Iniciando processamento de amostras em: {dataset_dir}")
     
-    # Processa amostras representativas para demonstração e geração de estatísticas
-    df_results = process_directory(dataset_dir, max_total_samples=20)
+    # Verificar se o usuário solicitou processar TODAS as imagens via argumento '--all'
+    if "--all" in sys.argv:
+        print("Modo COMPLETO ativado: Processando TODAS as imagens do repositório...")
+        max_samples = None
+    else:
+        print("Modo DEMONSTRAÇÃO ativado: Processando amostra de 20 imagens espalhadas pelas pastas...")
+        print("(Para processar todas as 2.338 imagens, execute: python main.py --all)\n")
+        max_samples = 20
+        
+    df_results = process_directory(dataset_dir, max_total_samples=max_samples)
     
     print("\n--- RESUMO DA EXTRAÇÃO ---")
     total = len(df_results)
