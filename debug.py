@@ -81,9 +81,9 @@ def extract_values_from_text(text, amostra):
         return (v_max, v_med)
         
     elif amostra == "Amostra 3":
-        reg_match = re.search(r'reg[^\d]*(\d+)', text, re.IGNORECASE)
-        med3_match = re.search(r'medida[^\d]*(\d+)', text, re.IGNORECASE)
-        cons3_match = re.search(r'considerada[^\d]*(\d+)', text, re.IGNORECASE)
+        reg_match = re.search(r'vel\.?\s*(?:reg)?\.?\s*[:\.\s]*(\d+)\s*km/?h', text, re.IGNORECASE)
+        med3_match = re.search(r'medida\.?\s*[:\.\s]*(\d+)', text, re.IGNORECASE)
+        cons3_match = re.search(r'considerada\.?\s*[:\.\s]*(\d+)', text, re.IGNORECASE)
         
         v_reg = int(reg_match.group(1)) if reg_match else None
         v_med = int(med3_match.group(1)) if med3_match else None
@@ -165,9 +165,12 @@ def process_single_image(reader, img_path):
     parts = rel_path.split(os.sep)
     amostra_folder = parts[0] if len(parts) > 1 else "Desconhecido"
     
+    import cv2
     img = load_image(img_path)
     region = 'top' if amostra_folder == "Amostra 3" else 'bottom'
     cropped = crop_metadata_region(img, region=region, ratio=0.35)
+    # Redimensiona por 2x com interpolação cúbica para aumentar fontes pequenas e melhorar o OCR
+    cropped = cv2.resize(cropped, (0,0), fx=2.0, fy=2.0, interpolation=cv2.INTER_CUBIC)
     
     results = reader.readtext(cropped, detail=0)
     full_text = " ".join(results)

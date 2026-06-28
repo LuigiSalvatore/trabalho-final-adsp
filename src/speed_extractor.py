@@ -62,6 +62,8 @@ class SpeedExtractor:
         
         for region in regions_to_test:
             cropped = crop_metadata_region(img, region=region, ratio=0.3)
+            # Redimensiona por 2x com interpolação cúbica para aumentar fontes pequenas e melhorar o OCR
+            cropped = cv2.resize(cropped, (0,0), fx=2.0, fy=2.0, interpolation=cv2.INTER_CUBIC)
             enhanced, thresh = enhance_text_region(cropped)
             
             # Executar EasyOCR se disponível
