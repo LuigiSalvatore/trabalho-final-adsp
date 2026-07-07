@@ -180,15 +180,16 @@ def process_directory(base_dir, max_total_samples=30, reset=False, n_workers=Non
         total_to_process = len(results) + len(pending_files)
         print(f"Progresso: {len(results)} concluídos, {len(pending_files)} restantes de um total de {total_to_process}.")
     else:
-        # Varredura inicial
-        extensions = ['*.jpg', '*.png', '*.jpeg', '*.JPG', '*.PNG', '*.JPEG']
+        # Varredura inicial (evita duplicatas causadas pelo glob case-insensitive no Windows)
         all_image_files = []
+        valid_extensions = {'.jpg', '.jpeg', '.png'}
         for root, dirs, files in os.walk(base_dir):
-            for ext in extensions:
-                for filepath in glob.glob(os.path.join(root, ext)):
-                    all_image_files.append(filepath)
+            for file in files:
+                ext = os.path.splitext(file)[1].lower()
+                if ext in valid_extensions:
+                    all_image_files.append(os.path.join(root, file))
 
-        all_image_files = sorted(all_image_files)
+        all_image_files = sorted(list(set(all_image_files)))
 
         if max_total_samples is not None:
             step = max(1, len(all_image_files) // max_total_samples) if all_image_files else 1
